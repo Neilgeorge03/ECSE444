@@ -4,10 +4,11 @@
  *  Created on: Jan 25, 2025
  *      Author: Neil
  */
+#include "main.h"
 
 #ifndef INC_KALMANFILTERASSEMBLY_H_
 #define INC_KALMANFILTERASSEMBLY_H_
 
-
+void kalmanFilter(struct kalman_state* kState, float measurement);
 
 #endif /* INC_KALMANFILTERASSEMBLY_H_ */
