@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "filter.h"
 
 /* USER CODE END Includes */
 
@@ -31,6 +32,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define ITM_Port32(n) (*((volatile unsigned long *)(0xE0000000+4*n)))
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -62,14 +65,8 @@ static void MX_GPIO_Init(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
-	kalman_state kstate = {
-			.q = 0.1f,
-			.r = 0.1f,
-			.p = 0.1f,
-			.x = 5.0f,
-			.k = 0.0f
-	};
 
   /* USER CODE END 1 */
 
@@ -92,6 +89,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  // KalmanStruct filter = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
+  // KalmanStruct zero_div_filter = {-1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
+  KalmanStruct overflow_filter = {9e38f, 9e38f, 9e38f, 9e38f, 9e38f};
+  float measurement = 0.0f;
+  int err_code = 0;
 
   /* USER CODE END 2 */
 
@@ -102,13 +104,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//	for (;measurement < 5.0f; measurement++) {
+//		err_code = KalmanFilter(&filter, measurement);
+//		if (err_code != 0) {
+//			return err_code;
+//		}
+//	}
 
-	  for (int i = 0; i < 5; i++){
-		  float measurement = (float) i;
-			kalmanFilter(&kstate, measurement);
-		  printf("Updated estimate: %f\n", kstate.x);
-		  HAL_Delay(100);
-	  }
+//	for (;measurement < 5.0f; measurement++) {
+//			err_code = KalmanFilter(&zero_div_filter, measurement);
+//			if (err_code == 1) {
+//				return err_code;
+//			}
+//		}
+
+	for (;measurement < 5.0f; measurement++) {
+			err_code = KalmanFilter(&overflow_filter, measurement);
+			if (err_code == 1) {
+				return err_code;
+			}
+		}
+
   }
   /* USER CODE END 3 */
 }
@@ -170,10 +186,14 @@ void SystemClock_Config(void)
   */
 static void MX_GPIO_Init(void)
 {
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
