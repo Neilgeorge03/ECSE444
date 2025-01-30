@@ -8,14 +8,8 @@
 #ifndef INC_KALMANFILTER_C_H_
 #define INC_KALMANFILTER_C_H_
 
-typedef struct {
-    float q;
-    float r;
-    float x;
-    float p;
-    float k;
-} kalman_state_C;
+#include "filter.h"
 
-void KalmanFilter_C (kalman_state_C* kState, float measurement);
+void KalmanFilter_C(KalmanStruct *kState, float measurement);
 
 #endif /* INC_KALMANFILTER_C_H_ */

@@ -28,9 +28,9 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32l4xx_hal.h"
-#include "KalmanfilterAssembly.h"
 #include "KalmanFilter_C.h"
 #include "KalmanFilter_C_CMSIS.h"
+#include "filter.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -39,14 +39,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
-typedef struct {
-    float q;
-    float r;
-    float x;
-    float p;
-    float k;
-} kalman_state;
 
 /* USER CODE END ET */
 

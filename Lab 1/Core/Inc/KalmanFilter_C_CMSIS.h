@@ -9,16 +9,8 @@
 #define INC_KALMANFILTER_C_CMSIS_H_
 #include <arm_math.h>  // Include CMSIS-DSP library
 #include <stdio.h>
+#include "filter.h"
 
-
-typedef struct {
-    float32_t q;
-    float32_t r;
-    float32_t x;
-    float32_t p;
-    float32_t k;
-} kalman_state_C_CMSIS;
-
-void KalmanFilter_C_CMSIS(kalman_state_C_CMSIS* kState, float32_t measurement);
+void KalmanFilter_C_CMSIS(KalmanStruct *kState, float32_t measurement);
 
 #endif /* INC_KALMANFILTER_C_CMSIS_H_ */

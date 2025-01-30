@@ -7,7 +7,7 @@
 
 #include "KalmanFilter_C.h"
 
-void KalmanFilter_C (kalman_state_C* kState, float measurement){
+void KalmanFilter_C (KalmanStruct* kState, float measurement){
 
 	kState->p = kState->p + kState->q;
 	kState->k = kState->p / (kState->p + kState->r);
