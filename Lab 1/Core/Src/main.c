@@ -88,10 +88,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-   KalmanStruct filter = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
+  KalmanStruct filterAssembly = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
+  KalmanStruct filterC = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
+  KalmanStruct filterCMSIS = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
   // KalmanStruct zero_div_filter = {-1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
 //  KalmanStruct overflow_filter = {9e38f, 9e38f, 9e38f, 9e38f, 9e38f};
-  float measurement = 0.0f;
   int err_code = 0;
 
   /* USER CODE END 2 */
@@ -110,12 +111,12 @@ int main(void)
 //		}
 //	}
 
-	for (;measurement < 5.0f; measurement++) {
-			err_code = KalmanFilter(&filter, measurement);
-			if (err_code == 1) {
-				return err_code;
-			}
-		}
+//	for (;measurement < 5.0f; measurement++) {
+//			err_code = KalmanFilter(&filter, measurement);
+//			if (err_code == 1) {
+//				return err_code;
+//			}
+//		}
 
 	 float TEST_ARRAY[] = {10.4915760032, 10.1349974709, 9.53992591829, 9.60311878706,
 	                      10.4858891793, 10.1104642352, 9.51066931906, 9.75755656493,
@@ -145,15 +146,91 @@ int main(void)
 	                      9.5799256668};
 
 	 int measurementCount = 101;
+	 float assemblyResult[101];
+	 float cResult[101];
+	 float cmsisResult[101];
+		for (int i = 0; i < measurementCount; i++) {
+				err_code = KalmanFilter(&filterAssembly, TEST_ARRAY[i]);
+				if (err_code != 0) {
+					return err_code;
+				}
+				assemblyResult[i] = filterAssembly.x;
+			}
+		for (int i = 0; i < measurementCount; i++) {
+				err_code = KalmanFilter_C(&filterC, TEST_ARRAY[i]);
+				if (err_code != 0) {
+					return err_code;
+				}
+				cResult[i] = filterC.x;
+			}
+		for (int i = 0; i < measurementCount; i++) {
+				err_code = KalmanFilter_C_CMSIS(&filterCMSIS, TEST_ARRAY[i]);
+				if (err_code != 0) {
+					return err_code;
+				}
+				cmsisResult[i] = filterCMSIS.x;
+			}
 
-//	for (int i = 0; i < measurementCount; i++) {
-//			err_code = KalmanFilter(&filter, TEST_ARRAY[i]);
-//			if (err_code == 1) {
-//				return err_code;
-//			}
-//		}
+		float differenceAssembly[101];
+		float differenceC[101];
+		float differenceCMSIS[101];
+
+		float meanAssembly, stdDevAssembly;
+		float correlationAssembly[2 * measurementCount - 1];
+		float convolutionAssembly[2 * measurementCount - 1];
+
+		// Difference
+		arm_sub_f32(TEST_ARRAY, assemblyResult, differenceAssembly, measurementCount);
+
+		// Mean and Standard Deviation
+		arm_mean_f32(differenceAssembly, measurementCount, &meanAssembly);
+		arm_std_f32(differenceAssembly, measurementCount, &stdDevAssembly);
+
+		// Correlation
+		arm_correlate_f32(TEST_ARRAY, measurementCount, assemblyResult, measurementCount, correlationAssembly);
+
+		// Convolution
+		arm_conv_f32(TEST_ARRAY, measurementCount, assemblyResult, measurementCount, convolutionAssembly);
+
+
+		float meanC, stdDevC;
+		float correlationC[2 * measurementCount - 1];
+		float convolutionC[2 * measurementCount - 1];
+
+		// Difference
+		arm_sub_f32(TEST_ARRAY, cResult, differenceC, measurementCount);
+
+		// Mean and Standard Deviation
+		arm_mean_f32(differenceC, measurementCount, &meanC);
+		arm_std_f32(differenceC, measurementCount, &stdDevC);
+
+		// Correlation
+		arm_correlate_f32(TEST_ARRAY, measurementCount, cResult, measurementCount, correlationC);
+
+		// Convolution
+		arm_conv_f32(TEST_ARRAY, measurementCount, cResult, measurementCount, convolutionC);
+
+		float meanCMSIS, stdDevCMSIS;
+		float correlationCMSIS[2 * measurementCount - 1];
+		float convolutionCMSIS[2 * measurementCount - 1];
+
+		// Difference
+		arm_sub_f32(TEST_ARRAY, cmsisResult, differenceCMSIS, measurementCount);
+
+		// Mean and Standard Deviation
+		arm_mean_f32(differenceCMSIS, measurementCount, &meanCMSIS);
+		arm_std_f32(differenceCMSIS, measurementCount, &stdDevCMSIS);
+
+		// Correlation
+		arm_correlate_f32(TEST_ARRAY, measurementCount, cmsisResult, measurementCount, correlationCMSIS);
+
+		// Convolution
+		arm_conv_f32(TEST_ARRAY, measurementCount, cmsisResult, measurementCount, convolutionCMSIS);
+
 
   }
+
+
   /* USER CODE END 3 */
 }
 

@@ -9,7 +9,10 @@
 #define INC_KALMANFILTER_C_H_
 
 #include "filter.h"
+#include "math.h"
+#include <float.h> // FLT_EPSILON
 
-void KalmanFilter_C(KalmanStruct *kState, float measurement);
+
+int KalmanFilter_C(KalmanStruct *kState, float measurement);
 
 #endif /* INC_KALMANFILTER_C_H_ */
