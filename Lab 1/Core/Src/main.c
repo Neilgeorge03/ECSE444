@@ -88,9 +88,6 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  KalmanStruct filterAssembly = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
-  KalmanStruct filterC = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
-  KalmanStruct filterCMSIS = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};
   // KalmanStruct zero_div_filter = {-1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
 //  KalmanStruct overflow_filter = {9e38f, 9e38f, 9e38f, 9e38f, 9e38f};
   int err_code = 0;
@@ -144,6 +141,10 @@ int main(void)
 	                      9.73938925207, 9.60543743477, 9.79600805462, 10.4950988486,
 	                      10.2814361401, 9.7985283333, 9.6287888922, 10.4491538991,
 	                      9.5799256668};
+	  // Initialize filter with more conservative values
+	 KalmanStruct filterAssembly = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+	  KalmanStruct filterC = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+	  KalmanStruct filterCMSIS = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
 
 	 int measurementCount = 101;
 	 float assemblyResult[101];
