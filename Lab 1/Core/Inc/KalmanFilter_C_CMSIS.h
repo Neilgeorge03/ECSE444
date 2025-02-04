@@ -11,6 +11,6 @@
 #include <stdio.h>
 #include "filter.h"
 
-int KalmanFilter_C_CMSIS(KalmanStruct *kState, float32_t measurement);
+int KalmanFilter_C_CMSIS(float* InputArray, float* OutputArray, KalmanStruct* kState, int Length);
 
 #endif /* INC_KALMANFILTER_C_CMSIS_H_ */

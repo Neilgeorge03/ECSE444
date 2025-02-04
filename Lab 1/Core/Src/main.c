@@ -142,9 +142,9 @@ int main(void)
 	                      10.2814361401, 9.7985283333, 9.6287888922, 10.4491538991,
 	                      9.5799256668};
 	  // Initialize filter with more conservative values
-	 KalmanStruct filterAssembly = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
-	  KalmanStruct filterC = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
-	  KalmanStruct filterCMSIS = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+	 KalmanStruct filterAssembly = {10.0f, 0.01f, TEST_ARRAY[0], 0.1f, 0.0f};
+	  KalmanStruct filterC = {10.0f, 0.01f, TEST_ARRAY[0], 0.1f, 0.0f};
+	  KalmanStruct filterCMSIS = {10.0f, 0.01f, TEST_ARRAY[0], 0.1f, 0.0f};
 
 	 int measurementCount = 101;
 	 float assemblyResult[101];
@@ -157,20 +157,15 @@ int main(void)
 				}
 				assemblyResult[i] = filterAssembly.x;
 			}
-		for (int i = 0; i < measurementCount; i++) {
-				err_code = KalmanFilter_C(&filterC, TEST_ARRAY[i]);
-				if (err_code != 0) {
-					return err_code;
-				}
-				cResult[i] = filterC.x;
-			}
-		for (int i = 0; i < measurementCount; i++) {
-				err_code = KalmanFilter_C_CMSIS(&filterCMSIS, TEST_ARRAY[i]);
-				if (err_code != 0) {
-					return err_code;
-				}
-				cmsisResult[i] = filterCMSIS.x;
-			}
+
+		err_code = KalmanFilter_C(TEST_ARRAY, cResult,&filterC, measurementCount);
+		if (err_code != 0) {
+			return err_code;
+		}
+		err_code = KalmanFilter_C_CMSIS(TEST_ARRAY, cmsisResult, &filterCMSIS, measurementCount);
+		if (err_code != 0) {
+			return err_code;
+		}
 
 		float differenceAssembly[101];
 		float differenceC[101];
@@ -227,7 +222,6 @@ int main(void)
 
 		// Convolution
 		arm_conv_f32(TEST_ARRAY, measurementCount, cmsisResult, measurementCount, convolutionCMSIS);
-
 
   }
 

@@ -13,6 +13,6 @@
 #include <float.h> // FLT_EPSILON
 
 
-int KalmanFilter_C(KalmanStruct *kState, float measurement);
+int KalmanFilter_C(float* InputArray, float* OutputArray, KalmanStruct* kState, int Length);
 
 #endif /* INC_KALMANFILTER_C_H_ */

@@ -1,6 +1,6 @@
 ################################################################################
 # Automatically-generated file. Do not edit!
-# Toolchain: GNU Tools for STM32 (10.3-2021.10)
+# Toolchain: GNU Tools for STM32 (12.3.rel1)
 ################################################################################
 
 -include ../makefile.init
@@ -60,8 +60,8 @@ all: main-build
 main-build: Lab\ 1.elf secondary-outputs
 
 # Tool invocations
-Lab\ 1.elf Lab\ 1.map: $(OBJS) $(USER_OBJS) C:\Users\Neil\STM32CubeIDE\ECSE444\Lab\ 1\STM32L4S5VITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Lab 1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\STM32L4S5VITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab 1.map" -Wl,--gc-sections -static -L"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\Drivers\CMSIS" -L"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\Core\Lib" -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Lab\ 1.elf Lab\ 1.map: $(OBJS) $(USER_OBJS) /Users/neiljoegeorge/Documents/ECSE444/Lab\ 1/STM32L4S5VITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Lab 1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/neiljoegeorge/Documents/ECSE444/Lab 1/STM32L4S5VITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab 1.map" -Wl,--gc-sections -static -L"/Users/neiljoegeorge/Documents/ECSE444/Lab 1/Drivers/CMSIS" -L"/Users/neiljoegeorge/Documents/ECSE444/Lab 1/Core/Lib" -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
