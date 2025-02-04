@@ -139,12 +139,17 @@ int main(void) {
     //				return err_code;
     //			}
     //		}
+	  uint32_t startTime, endTime, numberCycles;
+
+	  startTime = DWT->CYCCNT;  // Start timer
 
 	err_code = Kalmanfilter(TEST_ARRAY, result, &kState, measurementCount);
     if (err_code != 0) {
       return err_code;
     }
+	  endTime = DWT->CYCCNT;  // End timer
 
+	  numberCycles = endTime - startTime;
     // Difference
     arm_sub_f32(TEST_ARRAY, result, difference, measurementCount);
 
