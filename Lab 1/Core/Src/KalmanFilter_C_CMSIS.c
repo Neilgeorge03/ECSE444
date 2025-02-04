@@ -7,7 +7,7 @@
 
 #include "KalmanFilter_C_CMSIS.h"
 
-int KalmanFilter_C_CMSIS(KalmanStruct* kState, float measurement) {
+int KalmanFilter_C_CMSIS(kalman_state* kState, float measurement) {
     float32_t temp1[1], temp2[1], one[1] = {1.0f};
 
     // P = P + Q

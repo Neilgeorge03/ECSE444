@@ -7,7 +7,7 @@
 
 #include "KalmanFilter_C.h"
 
-int KalmanFilter_C (KalmanStruct* kState, float measurement){
+int KalmanFilter_C (kalman_state* kState, float measurement){
 
 	kState->p = kState->p + kState->q;
     if (isinf(kState->p) || isnan(kState->p)) {

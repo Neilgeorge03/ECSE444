@@ -57,7 +57,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+int Kalmanfilter(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
