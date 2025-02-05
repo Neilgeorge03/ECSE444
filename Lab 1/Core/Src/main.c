@@ -88,7 +88,6 @@ int main(void) {
   /* USER CODE BEGIN 2 */
   // KalmanStruct zero_div_filter = {-1.0f, 1.0f, 0.0f, 0.0f, 0.0f};
   //  KalmanStruct overflow_filter = {9e38f, 9e38f, 9e38f, 9e38f, 9e38f};
-  int err_code = 0;
   float TEST_ARRAY[] = {
       10.4915760032, 10.1349974709, 9.53992591829, 9.60311878706, 10.4858891793, 10.1104642352,
       9.51066931906, 9.75755656493, 9.82154078273, 10.2906541933, 10.4861328671, 9.57321181356,
@@ -107,8 +106,11 @@ int main(void) {
       10.3535284606, 10.2437410625, 10.3851531317, 9.90784804928, 9.98208344925, 9.52778805729,
       9.69323876912, 9.92987312087, 9.73938925207, 9.60543743477, 9.79600805462, 10.4950988486,
       10.2814361401, 9.7985283333,  9.6287888922,  10.4491538991, 9.5799256668};
+  
   // Initialize filter with more conservative values
   kalman_state kState = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state CKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state CMSISKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
 
   int measurementCount = 101;
   float result[101];
@@ -126,30 +128,43 @@ int main(void) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    //	for (;measurement < 5.0f; measurement++) {
-    //		err_code = KalmanFilter(&filter, measurement);
-    //		if (err_code != 0) {
-    //			return err_code;
-    //		}
-    //	}
+    uint32_t startTime, endTime;
+    int asmNbCycles = 0, CNbCycles = 0, CMSISNbCycles = 0;
+    int errCode;
 
-    //	for (;measurement < 5.0f; measurement++) {
-    //			err_code = KalmanFilter(&filter, measurement);
-    //			if (err_code == 1) {
-    //				return err_code;
-    //			}
-    //		}
-	  uint32_t startTime, endTime, numberCycles;
-
-	  startTime = DWT->CYCCNT;  // Start timer
-
-	err_code = Kalmanfilter(TEST_ARRAY, result, &kState, measurementCount);
-    if (err_code != 0) {
-      return err_code;
+    // Asm Implementation
+    for (int i = 0; i < measurementCount; i++) {
+  	  startTime = DWT->CYCCNT;  // Start Timer
+      errCode = KalmanFilter(&kState, TEST_ARRAY[i]);
+      endTime = DWT->CYCCNT; // End Timer
+      asmNbCycles += (endTime - startTime);
+      if (errCode != 0)
+        return errCode;
+      // result array (output array) is completed here. No need to populate it again later. 
+      result[i] = kState.x;
     }
-	  endTime = DWT->CYCCNT;  // End timer
 
-	  numberCycles = endTime - startTime;
+    // C Implementation
+    for (int i = 0; i < measurementCount; i++) {
+      startTime = DWT->CYCCNT;
+      errCode = KalmanFilter_C(&CKState, TEST_ARRAY[i]);
+      endTime = DWT->CYCCNT;
+      CNbCycles += (endTime - startTime);
+      if (errCode != 0)
+        return errCode;
+    }
+
+    // CMSIS Implementation
+    for (int i = 0; i < measurementCount; i++) {
+      startTime = DWT->CYCCNT;
+      errCode = KalmanFilter_C_CMSIS(&CMSISKState, TEST_ARRAY[i]);
+      endTime = DWT->CYCCNT;
+      CMSISNbCycles += (endTime - startTime);
+      if (errCode != 0)
+        return errCode;
+    } 
+
+
     // Difference
     arm_sub_f32(TEST_ARRAY, result, difference, measurementCount);
 
@@ -230,20 +245,7 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-int Kalmanfilter(float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
-  for (int i = 0; i < Length; i++) {
-    int err_code;
-    err_code = KalmanFilter_C(kstate, InputArray[i]);
-    err_code = KalmanFilter_C_CMSIS(kstate, InputArray[i]);
-    err_code = KalmanFilter(kstate, InputArray[i]);
-    if (err_code != 0) {
-      return err_code;
-    }
-    OutputArray[i] = kstate->x;
-  }
 
-  return 0;
-}
 /* USER CODE END 4 */
 
 /**
