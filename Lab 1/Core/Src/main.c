@@ -111,9 +111,11 @@ int main(void) {
   kalman_state kState = {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
   kalman_state CKState= {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
   kalman_state CMSISKState= {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
+  DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;  // Enable the cycle counter
 
   int measurementCount = 101;
   float result[101];
+  float resultC[101];
   float difference[101];
 
   float mean, stdDev;
@@ -145,6 +147,7 @@ int main(void) {
     CNbCycles += (endTime - startTime);
     if (errCode != 0)
       return errCode;
+    resultC[i] = CKState.x;
   }
 
   // CMSIS Implementation
