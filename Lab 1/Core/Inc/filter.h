@@ -15,5 +15,6 @@ typedef struct {
 #define KALMAN_OVERFLOW 2
 
 extern int KalmanFilter(kalman_state *filter_addr, float measurement);
+extern int KalmanFilterArray(kalman_state *filter_addr, float *measurement, float *result_addr);
 
 #endif

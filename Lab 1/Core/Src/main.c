@@ -108,8 +108,8 @@ int main(void) {
       10.2814361401, 9.7985283333,  9.6287888922,  10.4491538991, 9.5799256668};
   
   // Initialize filter with more conservative values
-  kalman_state kState = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
-  kalman_state CKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state kState = {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};  // Higher process and measurement noise
+  kalman_state CKState= {0.1f, 0.1f, 5.0f, 0.1f, 0.0f};  // Higher process and measurement noise
   kalman_state CMSISKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
 
   int measurementCount = 101;
@@ -133,15 +133,16 @@ int main(void) {
     int errCode;
 
     // Asm Implementation
-    for (int i = 0; i < measurementCount; i++) {
+    for (int i = 0; i < 5; i++) {
   	  startTime = DWT->CYCCNT;  // Start Timer
+
       errCode = KalmanFilter(&kState, TEST_ARRAY[i]);
       endTime = DWT->CYCCNT; // End Timer
       asmNbCycles += (endTime - startTime);
       if (errCode != 0)
         return errCode;
       // result array (output array) is completed here. No need to populate it again later. 
-      result[i] = kState.x;
+      result[i] = CKState.x;
     }
 
     // C Implementation

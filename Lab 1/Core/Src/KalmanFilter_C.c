@@ -26,7 +26,7 @@ int KalmanFilter_C (kalman_state* kState, float measurement){
         return KALMAN_OVERFLOW; // Overflow error
     }
 
-	kState->p = (1.0-kState->k) * kState->p;
+	kState->p = (1.0f-kState->k) * kState->p;
     if (isinf(kState->p) || isnan(kState->p)) {
         return KALMAN_OVERFLOW; // Overflow error
     }
