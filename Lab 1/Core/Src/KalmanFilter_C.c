@@ -13,20 +13,26 @@ int KalmanFilter_C (kalman_state* kState, float measurement){
     if (isinf(kState->p) || isnan(kState->p)) {
         return KALMAN_OVERFLOW; // Overflow error
     }
-    if ((kState->p + kState->r) < FLT_EPSILON){
-    	return KALMAN_DIV_BY_ZERO;
+
+    float denominator = kState->p + kState->r;
+    if (denominator < FLT_EPSILON) {
+        return KALMAN_DIV_BY_ZERO;
     }
-	kState->k = kState->p / (kState->p + kState->r);
+
+    // Update: Calculate the Kalman gain
+    kState->k = kState->p / denominator;
+
+
     if (isinf(kState->k) || isnan(kState->k)) {
         return KALMAN_OVERFLOW; // Overflow error
     }
 
-	kState->x = kState->x + kState->k * (measurement - kState->x);
+	kState->x += kState->k * (measurement - kState->x);
     if (isinf(kState->x) || isnan(kState->x)) {
         return KALMAN_OVERFLOW; // Overflow error
     }
 
-	kState->p = (1.0-kState->k) * kState->p;
+	kState->p *= (1.0f-kState->k);
     if (isinf(kState->p) || isnan(kState->p)) {
         return KALMAN_OVERFLOW; // Overflow error
     }

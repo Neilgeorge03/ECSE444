@@ -108,9 +108,9 @@ int main(void) {
       10.2814361401, 9.7985283333,  9.6287888922,  10.4491538991, 9.5799256668};
   
   // Initialize filter with more conservative values
-  kalman_state kState = {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
-  kalman_state CKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
-  kalman_state CMSISKState= {1.0f, 1.0f, TEST_ARRAY[0], 10.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state kState = {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state CKState= {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
+  kalman_state CMSISKState= {1.0f, 0.1f, 5.0f, 1.0f, 0.0f};  // Higher process and measurement noise
 
   int measurementCount = 101;
   float result[101];
@@ -120,63 +120,64 @@ int main(void) {
   float correlation[2 * measurementCount - 1];
   float convolution[2 * measurementCount - 1];
 
-  /* USER CODE END 2 */
 
+  uint32_t startTime, endTime;
+  int asmNbCycles = 0, CNbCycles = 0, CMSISNbCycles = 0;
+  int errCode;
+
+  // Asm Implementation
+  for (int i = 0; i < measurementCount; i++) {
+	  startTime = DWT->CYCCNT;  // Start Timer
+    errCode = KalmanFilter(&kState, TEST_ARRAY[i]);
+    endTime = DWT->CYCCNT; // End Timer
+    asmNbCycles += (endTime - startTime);
+    if (errCode != 0)
+      return errCode;
+    // result array (output array) is completed here. No need to populate it again later.
+    result[i] = kState.x;
+  }
+
+  // C Implementation
+  for (int i = 0; i < measurementCount; i++) {
+    startTime = DWT->CYCCNT;
+    errCode = KalmanFilter_C(&CKState, TEST_ARRAY[i]);
+    endTime = DWT->CYCCNT;
+    CNbCycles += (endTime - startTime);
+    if (errCode != 0)
+      return errCode;
+  }
+
+  // CMSIS Implementation
+  for (int i = 0; i < measurementCount; i++) {
+    startTime = DWT->CYCCNT;
+    errCode = KalmanFilter_C_CMSIS(&CMSISKState, TEST_ARRAY[i]);
+    endTime = DWT->CYCCNT;
+    CMSISNbCycles += (endTime - startTime);
+    if (errCode != 0)
+      return errCode;
+  }
+
+
+  // Difference
+  arm_sub_f32(TEST_ARRAY, result, difference, measurementCount);
+
+  // Mean and Standard Deviation
+  arm_mean_f32(difference, measurementCount, &mean);
+  arm_std_f32(difference, measurementCount, &stdDev);
+
+  // Correlation
+  arm_correlate_f32(TEST_ARRAY, measurementCount, result, measurementCount, correlation);
+
+  // Convolution
+  arm_conv_f32(TEST_ARRAY, measurementCount, result, measurementCount, convolution);
+
+  /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    uint32_t startTime, endTime;
-    int asmNbCycles = 0, CNbCycles = 0, CMSISNbCycles = 0;
-    int errCode;
-
-    // Asm Implementation
-    for (int i = 0; i < measurementCount; i++) {
-  	  startTime = DWT->CYCCNT;  // Start Timer
-      errCode = KalmanFilter(&kState, TEST_ARRAY[i]);
-      endTime = DWT->CYCCNT; // End Timer
-      asmNbCycles += (endTime - startTime);
-      if (errCode != 0)
-        return errCode;
-      // result array (output array) is completed here. No need to populate it again later. 
-      result[i] = kState.x;
-    }
-
-    // C Implementation
-    for (int i = 0; i < measurementCount; i++) {
-      startTime = DWT->CYCCNT;
-      errCode = KalmanFilter_C(&CKState, TEST_ARRAY[i]);
-      endTime = DWT->CYCCNT;
-      CNbCycles += (endTime - startTime);
-      if (errCode != 0)
-        return errCode;
-    }
-
-    // CMSIS Implementation
-    for (int i = 0; i < measurementCount; i++) {
-      startTime = DWT->CYCCNT;
-      errCode = KalmanFilter_C_CMSIS(&CMSISKState, TEST_ARRAY[i]);
-      endTime = DWT->CYCCNT;
-      CMSISNbCycles += (endTime - startTime);
-      if (errCode != 0)
-        return errCode;
-    } 
-
-
-    // Difference
-    arm_sub_f32(TEST_ARRAY, result, difference, measurementCount);
-
-    // Mean and Standard Deviation
-    arm_mean_f32(difference, measurementCount, &mean);
-    arm_std_f32(difference, measurementCount, &stdDev);
-
-    // Correlation
-    arm_correlate_f32(TEST_ARRAY, measurementCount, result, measurementCount, correlation);
-
-    // Convolution
-    arm_conv_f32(TEST_ARRAY, measurementCount, result, measurementCount, convolution);
   }
 
   /* USER CODE END 3 */
