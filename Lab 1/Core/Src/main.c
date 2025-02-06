@@ -246,6 +246,20 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
+int Kalmanfilter(float* InputArray, float* OutputArray, kalman_state* kstate, int Length) {
+  for (int i = 0; i < Length; i++) {
+    int err_code;
+    err_code = KalmanFilter_C(kstate, InputArray[i]);
+    err_code = KalmanFilter_C_CMSIS(kstate, InputArray[i]);
+    err_code = KalmanFilter(kstate, InputArray[i]);
+    if (err_code != 0) {
+      return err_code;
+    }
+    OutputArray[i] = kstate->x;
+  }
+
+  return 0;
+}
 
 /* USER CODE END 4 */
 
