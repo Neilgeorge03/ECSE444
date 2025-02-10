@@ -116,6 +116,7 @@ int main(void) {
   int measurementCount = 101;
   float result[101];
   float resultC[101];
+  float resultCMSIS[101];
   float difference[101];
 
   float mean, stdDev;
@@ -158,6 +159,8 @@ int main(void) {
     CMSISNbCycles += (endTime - startTime);
     if (errCode != 0)
       return errCode;
+    resultCMSIS[i] = CMSISKState.x;
+
   }
 
 

@@ -1,5 +1,5 @@
-../Core/Src/main.c:65:5:main	1808	dynamic
-../Core/Src/main.c:193:6:SystemClock_Config	96	static
-../Core/Src/main.c:240:13:MX_GPIO_Init	16	static
-../Core/Src/main.c:252:5:Kalmanfilter	32	static
-../Core/Src/main.c:273:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:65:5:main	2208	dynamic
+../Core/Src/main.c:196:6:SystemClock_Config	96	static
+../Core/Src/main.c:243:13:MX_GPIO_Init	16	static
+../Core/Src/main.c:255:5:Kalmanfilter	32	static
+../Core/Src/main.c:276:6:Error_Handler	4	static,ignoring_inline_asm
