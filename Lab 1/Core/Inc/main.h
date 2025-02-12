@@ -32,6 +32,7 @@ extern "C" {
 #include "KalmanFilter_C_CMSIS.h"
 #include "filter.h"
 #include "arm_math.h"
+#include "analysis.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */

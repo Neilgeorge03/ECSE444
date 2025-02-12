@@ -1,5 +1,6 @@
 "./Core/Src/KalmanFilter_C.o"
 "./Core/Src/KalmanFilter_C_CMSIS.o"
+"./Core/Src/analysis.o"
 "./Core/Src/kalman.o"
 "./Core/Src/kalmanfilterarray.o"
 "./Core/Src/main.o"

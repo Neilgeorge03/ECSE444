@@ -11,6 +11,7 @@ S_SRCS += \
 C_SRCS += \
 ../Core/Src/KalmanFilter_C.c \
 ../Core/Src/KalmanFilter_C_CMSIS.c \
+../Core/Src/analysis.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32l4xx_hal_msp.c \
 ../Core/Src/stm32l4xx_it.c \
@@ -21,6 +22,7 @@ C_SRCS += \
 OBJS += \
 ./Core/Src/KalmanFilter_C.o \
 ./Core/Src/KalmanFilter_C_CMSIS.o \
+./Core/Src/analysis.o \
 ./Core/Src/kalman.o \
 ./Core/Src/kalmanfilterarray.o \
 ./Core/Src/main.o \
@@ -37,6 +39,7 @@ S_DEPS += \
 C_DEPS += \
 ./Core/Src/KalmanFilter_C.d \
 ./Core/Src/KalmanFilter_C_CMSIS.d \
+./Core/Src/analysis.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32l4xx_hal_msp.d \
 ./Core/Src/stm32l4xx_it.d \
@@ -54,7 +57,7 @@ Core/Src/%.o: ../Core/Src/%.s Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/KalmanFilter_C.cyclo ./Core/Src/KalmanFilter_C.d ./Core/Src/KalmanFilter_C.o ./Core/Src/KalmanFilter_C.su ./Core/Src/KalmanFilter_C_CMSIS.cyclo ./Core/Src/KalmanFilter_C_CMSIS.d ./Core/Src/KalmanFilter_C_CMSIS.o ./Core/Src/KalmanFilter_C_CMSIS.su ./Core/Src/kalman.d ./Core/Src/kalman.o ./Core/Src/kalmanfilterarray.d ./Core/Src/kalmanfilterarray.o ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32l4xx_hal_msp.cyclo ./Core/Src/stm32l4xx_hal_msp.d ./Core/Src/stm32l4xx_hal_msp.o ./Core/Src/stm32l4xx_hal_msp.su ./Core/Src/stm32l4xx_it.cyclo ./Core/Src/stm32l4xx_it.d ./Core/Src/stm32l4xx_it.o ./Core/Src/stm32l4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32l4xx.cyclo ./Core/Src/system_stm32l4xx.d ./Core/Src/system_stm32l4xx.o ./Core/Src/system_stm32l4xx.su
+	-$(RM) ./Core/Src/KalmanFilter_C.cyclo ./Core/Src/KalmanFilter_C.d ./Core/Src/KalmanFilter_C.o ./Core/Src/KalmanFilter_C.su ./Core/Src/KalmanFilter_C_CMSIS.cyclo ./Core/Src/KalmanFilter_C_CMSIS.d ./Core/Src/KalmanFilter_C_CMSIS.o ./Core/Src/KalmanFilter_C_CMSIS.su ./Core/Src/analysis.cyclo ./Core/Src/analysis.d ./Core/Src/analysis.o ./Core/Src/analysis.su ./Core/Src/kalman.d ./Core/Src/kalman.o ./Core/Src/kalmanfilterarray.d ./Core/Src/kalmanfilterarray.o ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32l4xx_hal_msp.cyclo ./Core/Src/stm32l4xx_hal_msp.d ./Core/Src/stm32l4xx_hal_msp.o ./Core/Src/stm32l4xx_hal_msp.su ./Core/Src/stm32l4xx_it.cyclo ./Core/Src/stm32l4xx_it.d ./Core/Src/stm32l4xx_it.o ./Core/Src/stm32l4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32l4xx.cyclo ./Core/Src/system_stm32l4xx.d ./Core/Src/system_stm32l4xx.o ./Core/Src/system_stm32l4xx.su
 
 .PHONY: clean-Core-2f-Src
 

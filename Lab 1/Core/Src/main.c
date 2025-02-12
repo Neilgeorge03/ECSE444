@@ -117,11 +117,7 @@ int main(void) {
   float result[101];
   float resultC[101];
   float resultCMSIS[101];
-  float difference[101];
 
-  float mean, stdDev;
-  float correlation[2 * measurementCount - 1];
-  float convolution[2 * measurementCount - 1];
 
 
   uint32_t startTime, endTime;
@@ -164,18 +160,6 @@ int main(void) {
   }
 
 
-  // Difference
-  arm_sub_f32(TEST_ARRAY, result, difference, measurementCount);
-
-  // Mean and Standard Deviation
-  arm_mean_f32(difference, measurementCount, &mean);
-  arm_std_f32(difference, measurementCount, &stdDev);
-
-  // Correlation
-  arm_correlate_f32(TEST_ARRAY, measurementCount, result, measurementCount, correlation);
-
-  // Convolution
-  arm_conv_f32(TEST_ARRAY, measurementCount, result, measurementCount, convolution);
 
   /* USER CODE END 2 */
   /* Infinite loop */
