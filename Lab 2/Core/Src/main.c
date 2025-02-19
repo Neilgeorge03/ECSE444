@@ -22,8 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include <string.h>
-#include "measurement.h"
+#include "core_cm4.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +44,15 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
+volatile uint8_t state;
+#define VREF_CAL_ADDR ((uint16_t*)0x1FFF75AA)
+#define TS_CAL1_ADDR  ((uint16_t*)0x1FFF75A8)  // Address for TS_CAL1
+#define TS_CAL2_ADDR  ((uint16_t*)0x1FFF75CA)  // Address for TS_CAL2
+#define TS_CAL1_TEMP  30.0f                    // Temperature at TS_CAL1
+#define TS_CAL2_TEMP  130.0f                   // Temperature at TS_CAL2
 
 /* USER CODE END PV */
 
@@ -52,6 +60,7 @@ ADC_HandleTypeDef hadc1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -91,38 +100,49 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  int state = 0;  // keep track of state
-  float voltage;
-  float temperature;
-
+  int8_t data[100];
+  int8_t uartLen;
+  float voltage, temperature;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+  	  switch (state){
+  		  case 0:
+  			  voltage = getVoltage(&hadc1);
+  			  uartLen = sprintf(data, "The voltage is: %.2fV\n", voltage);
+//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
+
+  			  for (int i = 0; i < uartLen; i++){
+  				ITM_SendChar(data[i]);
+  			  }
+  			  break;
+
+  		  case 1:
+  			  temperature = getTemperature(&hadc1);
+  			  uartLen = sprintf(data, "The temperature is: %.2f%cC\n", temperature, 176);
+//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
+
+  			  for (int i = 0; i < uartLen; i++){
+  				ITM_SendChar(data[i]);
+  			  }
+  			  break;
+  		  default:
+  			  uartLen = sprintf("The state is: %d\n", state);
+  			  for (int i = 0; i < uartLen; i++){
+  				ITM_SendChar(data[i]);
+  			  }
+
+  	  }
+  	  HAL_Delay(1000);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (HAL_GPIO_ReadPin(USER_PB_GPIO_Port, USER_PB_Pin) == 0) {
-		  HAL_Delay(50); // help with button debounce
-		  if (HAL_GPIO_ReadPin(USER_PB_GPIO_Port, USER_PB_Pin) == 0) {
-			  state ^= 1; // XOR to switch between states
-			  while (HAL_GPIO_ReadPin(USER_PB_GPIO_Port, USER_PB_Pin) == 0);
-		  }
-	  }
-
-	  switch (state) {
-		  case 0:
-			  voltage = getVoltage(&hadc1);
-			  break;
-
-		  case 1:
-			  temperature = getTemperature(&hadc1);
-			  break;
-	  }
-	  HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -224,7 +244,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_VREFINT;
+  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -261,6 +281,54 @@ static void MX_ADC1_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -274,28 +342,43 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : USER_PB_Pin */
-  GPIO_InitStruct.Pin = USER_PB_Pin;
+  /*Configure GPIO pin : User_Button_Pin */
+  GPIO_InitStruct.Pin = User_Button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USER_PB_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(User_Button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LED2_Pin */
-  GPIO_InitStruct.Pin = LED2_Pin;
+  /*Configure GPIO pin : PB14 */
+  GPIO_InitStruct.Pin = GPIO_PIN_14;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == User_Button_Pin) {
+	state ^= 1;
+    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
+//    HAL_Delay(1000);
+  } else {
+      __NOP();
+  }
+}
 
 /* USER CODE END 4 */
 

@@ -1,2 +1,2 @@
-../Core/Src/measurement.c:8:7:getVoltage	2
-../Core/Src/measurement.c:27:7:getTemperature	1
+../Core/Src/measurement.c:14:7:getVoltage	2
+../Core/Src/measurement.c:33:7:getTemperature	1

@@ -32,6 +32,7 @@ extern "C" {
 #include "KalmanFilter_C_CMSIS.h"
 #include "filter.h"
 #include "arm_math.h"
+#include "analysis.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -57,7 +58,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+int Kalmanfilter(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

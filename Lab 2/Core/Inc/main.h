@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "measurement.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -57,10 +57,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define USER_PB_Pin GPIO_PIN_13
-#define USER_PB_GPIO_Port GPIOC
-#define LED2_Pin GPIO_PIN_14
-#define LED2_GPIO_Port GPIOB
+#define User_Button_Pin GPIO_PIN_13
+#define User_Button_GPIO_Port GPIOC
+#define User_Button_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 

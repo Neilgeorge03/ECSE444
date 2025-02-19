@@ -1,9 +1,15 @@
+/*
+ * measurement.c
+ *
+ *  Created on: Feb 19, 2025
+ *      Author: neiljoegeorge
+ */
+
+
 #include "main.h"
+#include "measurement.h"
 #include <stdint.h>
 
-#define VREFINT_ADDR  ((uint16_t*)0x1FFF75AA)
-#define TS_CAL1_ADDR      ((uint16_t*)0x1FFF75A8) // 30°C
-#define TS_CAL2_ADDR      ((uint16_t*)0x1FFF75CA) // 130°C
 
 float getVoltage(ADC_HandleTypeDef *hadc) {
     uint32_t adc_value;
