@@ -67,28 +67,7 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-float getVoltage(){
-	float adc_value;
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	adc_value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
-	float vRef = (3.0f * (* VREF_CAL_ADDR))/((float) adc_value);
-	return vRef;
-}
 
-int8_t getTemperature(){
-    uint16_t ts_cal1 = *TS_CAL1_ADDR;  // Read calibration value at 30°C
-    uint16_t ts_cal2 = *TS_CAL2_ADDR;  // Read calibration value at 130°C
-
-	uint32_t adc_value;
-	HAL_ADC_Start(&hadc1);
-	HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	adc_value = HAL_ADC_GetValue(&hadc1);
-	HAL_ADC_Stop(&hadc1);
-	return ((100.0f) / (float)(ts_cal2 - ts_cal1)) *
-	           (adc_value - ts_cal1) + TS_CAL1_TEMP;
-}
 /* USER CODE END 0 */
 
 /**
@@ -134,23 +113,23 @@ int main(void)
   {
   	  switch (state){
   		  case 0:
-  			  voltage = getVoltage();
+  			  voltage = getVoltage(&hadc1);
   			  uartLen = sprintf(data, "The voltage is: %.2fV\n", voltage);
-  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
+//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
 
-//  			  for (int i = 0; i < uartLen; i++){
-//  				ITM_SendChar(data[i]);
-//  			  }
-//  			  break;
+  			  for (int i = 0; i < uartLen; i++){
+  				ITM_SendChar(data[i]);
+  			  }
+  			  break;
 
   		  case 1:
-  			  temperature = getTemperature();
+  			  temperature = getTemperature(&hadc1);
   			  uartLen = sprintf(data, "The temperature is: %.2f%cC\n", temperature, 176);
-  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
+//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
 
-//  			  for (int i = 0; i < uartLen; i++){
-//  				ITM_SendChar(data[i]);
-//  			  }
+  			  for (int i = 0; i < uartLen; i++){
+  				ITM_SendChar(data[i]);
+  			  }
   			  break;
   		  default:
   			  uartLen = sprintf("The state is: %d\n", state);
