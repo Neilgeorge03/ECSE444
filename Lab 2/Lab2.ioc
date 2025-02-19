@@ -1,5 +1,5 @@
 #MicroXplorer Configuration settings - do not modify
-ADC1.Channel-2\#ChannelRegularConversion=ADC_CHANNEL_TEMPSENSOR
+ADC1.Channel-2\#ChannelRegularConversion=ADC_CHANNEL_VREFINT
 ADC1.CommonPathInternal=ADC_CHANNEL_VREFINT|ADC_CHANNEL_TEMPSENSOR|null|null
 ADC1.EnableInjectedConversion=ENABLE
 ADC1.IPParameters=Rank-2\#ChannelRegularConversion,Channel-2\#ChannelRegularConversion,SamplingTime-2\#ChannelRegularConversion,OffsetNumber-2\#ChannelRegularConversion,NbrOfConversionFlag,master,EnableInjectedConversion,InjectedRank-3\#ChannelInjectedConversion,InjectedChannel-3\#ChannelInjectedConversion,Rank1_Channel,InjectedSamplingTime-3\#ChannelInjectedConversion,InjectedOffsetNumber-3\#ChannelInjectedConversion,InjMonitoredBy-3\#ChannelInjectedConversion,InjNumberOfConversion,CommonPathInternal
@@ -43,8 +43,8 @@ Mcu.PinsNb=8
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32L4S5VITx
-MxCube.Version=6.11.1
-MxDb.Version=DB.6.0.111
+MxCube.Version=6.13.0
+MxDb.Version=DB.6.0.130
 NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.EXTI15_10_IRQn=true\:0\:0\:false\:false\:true\:true\:true\:true
