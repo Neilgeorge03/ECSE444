@@ -6,7 +6,6 @@
  */
 
 
-#include "main.h"
 #include "measurement.h"
 #include <stdint.h>
 
@@ -30,15 +29,22 @@ float getVoltage(ADC_HandleTypeDef *hadc) {
     return vRefPlus;
 }
 
+
 float getTemperature(ADC_HandleTypeDef *hadc) {
     uint32_t adc_value;
     uint16_t ts_cal1 = *TS_CAL1_ADDR;  // 30°C
     uint16_t ts_cal2 = *TS_CAL2_ADDR;  // 130°C
 
+    if (HAL_ADCEx_Calibration_Start(hadc, ADC_SINGLE_ENDED) != HAL_OK) {
+      Error_Handler();
+    }
+
     // Read value from injected channel (which is responsible for TEMP)
     HAL_ADCEx_InjectedStart(hadc);
     HAL_Delay(1);
+    HAL_ADCEx_InjectedPollForConversion(hadc, HAL_MAX_DELAY);
     adc_value = HAL_ADCEx_InjectedGetValue(hadc, ADC_INJECTED_RANK_1);
+    HAL_ADCEx_InjectedStop(hadc);
 
     float vRef = getVoltage(hadc);  // Read actual VREF+
     float adj_adc_value = adc_value * (vRef / 3.0f);

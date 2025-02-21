@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "core_cm4.h"
+#include "measurement.h"
 
 /* USER CODE END Includes */
 
@@ -48,12 +49,6 @@ UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 volatile uint8_t state;
-#define VREF_CAL_ADDR ((uint16_t*)0x1FFF75AA)
-#define TS_CAL1_ADDR  ((uint16_t*)0x1FFF75A8)  // Address for TS_CAL1
-#define TS_CAL2_ADDR  ((uint16_t*)0x1FFF75CA)  // Address for TS_CAL2
-#define TS_CAL1_TEMP  30.0f                    // Temperature at TS_CAL1
-#define TS_CAL2_TEMP  130.0f                   // Temperature at TS_CAL2
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,8 +110,6 @@ int main(void)
   		  case 0:
   			  voltage = getVoltage(&hadc1);
   			  uartLen = sprintf(data, "The voltage is: %.2fV\n", voltage);
-//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
-
   			  for (int i = 0; i < uartLen; i++){
   				ITM_SendChar(data[i]);
   			  }
@@ -125,12 +118,11 @@ int main(void)
   		  case 1:
   			  temperature = getTemperature(&hadc1);
   			  uartLen = sprintf(data, "The temperature is: %.2f%cC\n", temperature, 176);
-//  			  HAL_UART_Transmit(&huart1, data, uartLen, 1000);
-
   			  for (int i = 0; i < uartLen; i++){
   				ITM_SendChar(data[i]);
   			  }
   			  break;
+
   		  default:
   			  uartLen = sprintf("The state is: %d\n", state);
   			  for (int i = 0; i < uartLen; i++){
@@ -244,7 +236,7 @@ static void MX_ADC1_Init(void)
 
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+  sConfig.Channel = ADC_CHANNEL_VREFINT;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_247CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -345,20 +337,20 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : User_Button_Pin */
-  GPIO_InitStruct.Pin = User_Button_Pin;
+  /*Configure GPIO pin : User_PB_Pin */
+  GPIO_InitStruct.Pin = User_PB_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(User_Button_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(User_PB_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PB14 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
@@ -371,8 +363,12 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  if(GPIO_Pin == User_Button_Pin) {
+  if(GPIO_Pin == User_PB_Pin) {
+	// INTERRUPT: When User_PB pressed, XOR changes the state
+	// from voltage <-> temperature.
 	state ^= 1;
+	// GPIO_PIN_14 is the LED which changes based on whether the
+	// temperature or the voltage is being measured.
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_14);
 //    HAL_Delay(1000);
   } else {
