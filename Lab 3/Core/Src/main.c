@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <math.h>
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,18 +95,26 @@ int main(void)
   // Using 8-bit waves -> Max DAC Output = 2^8 - 1 = 255
   uint8_t sawtooth_multipliers[8] = {0, 1, 2, 3, 4, 5, 6, 7};
   uint8_t triangle_multipliers[8] = {0, 1, 2, 3, 3, 2, 1, 0};
+  float   sinusoid_multiplier[8]  = {0.0f, 0.707f, 1.0f, 0.707f, 0.0f, -0.707f, -1.0f, -0.707f};
+
 
   uint8_t sawtooth_wave[8];
   uint8_t triangle_wave[8];
+  uint8_t sinusoid_wave[8];
+
 
   for (int i = 0; i < 8; i++) {
 	  // 7 and 3 are picked because largest values mapped to 255
 	  // smallest multiplier (0) mapped to 0 in dac output
 	  sawtooth_wave[i] = 255 * sawtooth_multipliers[i] / 7;
 	  triangle_wave[i] = 255 * triangle_multipliers[i] / 3;
+	  // By adding 1, we make the wave oscillate between [0, 2] instead of [-1,1]
+	  // then we multiply and scale. Since 255 is largest, we divide everything
+	  // by 2 which is equivalent to multiplying by half of 255
+	  sinusoid_wave[i] = (uint8_t)((sinusoid_multiplier[i] + 1.0f) * 127.5f);
   }
 
-  uint8_t dac_triangle, dac_sawtooth;
+  uint8_t dac_triangle, dac_sawtooth, dac_sinusoid;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,8 +131,9 @@ int main(void)
 	  for (int j = 0; j < 3000; j++){
 		  dac_triangle = triangle_wave[i];
 	  	  dac_sawtooth = sawtooth_wave[i];
-	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_triangle);
-	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, dac_sawtooth);
+	  	  dac_sinusoid = sinusoid_wave[i];
+	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_sinusoid);
+	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, dac_triangle);
 	  	  // index for next value but mod 8 -> wrap around saw/tri wave arrays
 	  	  i = (i + 1) % 8;
 	  	  // to have 65Hz -> 15ms per period
@@ -134,6 +144,7 @@ int main(void)
 	  }
 	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
 	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
+
 	  int breakpoint = 0;
 
   }
