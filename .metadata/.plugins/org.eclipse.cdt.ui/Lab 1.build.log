@@ -1,17 +1,54 @@
-17:49:11 **** Incremental Build of configuration Debug for project Lab 1 ****
-make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L4S5xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "Lab 1.elf" @"objects.list"  -larm_cortexM4lf_math -mcpu=cortex-m4 -T"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\STM32L4S5VITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Lab 1.map" -Wl,--gc-sections -static -L"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\Drivers\CMSIS" -L"C:\Users\Neil\STM32CubeIDE\ECSE444\Lab 1\Core\Lib" -u _printf_float --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Lab 1.elf
- 
-arm-none-eabi-size   Lab\ 1.elf 
-arm-none-eabi-objdump -h -S  Lab\ 1.elf  > "Lab 1.list"
-   text	   data	    bss	    dec	    hex	filename
-  92784	    484	   1588	  94856	  17288	Lab 1.elf
-Finished building: default.size.stdout
- 
-Finished building: Lab 1.list
- 
+19:22:48 **** Incremental Build of configuration Debug for project Lab 1 ****
+make -j7 all 
+arm-none-eabi-gcc "../Core/Src/KalmanFilter_C_CMSIS.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L4S5xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/KalmanFilter_C_CMSIS.d" -MT"Core/Src/KalmanFilter_C_CMSIS.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/KalmanFilter_C_CMSIS.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L4S5xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/KalmanFilter_C_CMSIS.c: In function 'KalmanFilter_C_CMSIS':
+../Core/Src/KalmanFilter_C_CMSIS.c:13:29: error: 'Length' undeclared (first use in this function)
+   13 |         for (int i = 0; i < Length; i++){
+      |                             ^~~~~~
+../Core/Src/KalmanFilter_C_CMSIS.c:13:29: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/KalmanFilter_C_CMSIS.c:36:30: error: 'InputArray' undeclared (first use in this function)
+   36 |                 arm_sub_f32(&InputArray[i], &(kState->x), temp1, 1);
+      |                              ^~~~~~~~~~
+../Core/Src/KalmanFilter_C_CMSIS.c:57:17: error: 'OutputArray' undeclared (first use in this function)
+   57 |                 OutputArray[i] = kState->x;
+      |                 ^~~~~~~~~~~
+../Core/Src/KalmanFilter_C_CMSIS.c:11:35: warning: unused variable 'one' [-Wunused-variable]
+   11 |     float32_t temp1[1], temp2[1], one[1] = {1.0f};
+      |                                   ^~~
+../Core/Src/KalmanFilter_C_CMSIS.c:11:25: warning: unused variable 'temp2' [-Wunused-variable]
+   11 |     float32_t temp1[1], temp2[1], one[1] = {1.0f};
+      |                         ^~~~~
+../Core/Src/KalmanFilter_C_CMSIS.c:11:15: warning: unused variable 'temp1' [-Wunused-variable]
+   11 |     float32_t temp1[1], temp2[1], one[1] = {1.0f};
+      |               ^~~~~
+make: *** [Core/Src/subdir.mk:53: Core/Src/KalmanFilter_C_CMSIS.o] Error 1
+make: *** Waiting for unfinished jobs....
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:122:48: error: 'assemblyResult' undeclared (first use in this function)
+  122 |     arm_conv_f32(TEST_ARRAY, measurementCount, assemblyResult, measurementCount,
+      |                                                ^~~~~~~~~~~~~~
+../Core/Src/main.c:122:48: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/main.c:123:18: error: 'convolutionAssembly' undeclared (first use in this function)
+  123 |                  convolutionAssembly);
+      |                  ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:164:48: error: 'cmsisResult' undeclared (first use in this function)
+  164 |     arm_conv_f32(TEST_ARRAY, measurementCount, cmsisResult, measurementCount, convolutionCMSIS);
+      |                                                ^~~~~~~~~~~
+../Core/Src/main.c:164:79: error: 'convolutionCMSIS' undeclared (first use in this function)
+  164 |     arm_conv_f32(TEST_ARRAY, measurementCount, cmsisResult, measurementCount, convolutionCMSIS);
+      |                                                                               ^~~~~~~~~~~~~~~~
+../Core/Src/main.c:119:9: warning: variable 'resultCMSIS' set but not used [-Wunused-but-set-variable]
+  119 |   float resultCMSIS[101];
+      |         ^~~~~~~~~~~
+../Core/Src/main.c:118:9: warning: variable 'resultC' set but not used [-Wunused-but-set-variable]
+  118 |   float resultC[101];
+      |         ^~~~~~~
+../Core/Src/main.c:117:9: warning: variable 'result' set but not used [-Wunused-but-set-variable]
+  117 |   float result[101];
+      |         ^~~~~~
+make: *** [Core/Src/subdir.mk:53: Core/Src/main.o] Error 1
+"make -j7 all" terminated with exit code 2. Build might be incomplete.
 
-17:49:13 Build Finished. 0 errors, 0 warnings. (took 1s.838ms)
+19:22:48 Build Failed. 10 errors, 6 warnings. (took 644ms)
 

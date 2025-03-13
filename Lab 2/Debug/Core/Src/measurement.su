@@ -1,2 +1,2 @@
 ../Core/Src/measurement.c:13:7:getVoltage	32	static
-../Core/Src/measurement.c:32:7:getTemperature	40	static
+../Core/Src/measurement.c:33:7:getTemperature	40	static
