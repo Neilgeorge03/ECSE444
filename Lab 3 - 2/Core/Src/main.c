@@ -78,24 +78,56 @@ static void MX_TIM2_Init(void);
 /* USER CODE BEGIN 0 */
 //void generate_sine_wave(float frequency)
 
-float sine_wave_normalized[NUM_SAMPLES];
+uint16_t sine_wave_C6[22];
+uint16_t sine_wave_E6[17];
+uint16_t sine_wave_G6[15];
 
-void generate_sine_wave(float frequency, float sampling_rate, uint32_t *output_wave, int range) {
-    for (int i = 0; i < range; i++) {
-        float theta = 2.0f * PI * ((float)i) / range; // Properly scaled angle
-        output_wave[i] = (uint8_t)((arm_sin_f32(theta) + 1) * 1365); // 8-bit DAC scaling
+uint16_t *waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
+//uint32_t sample_sizes[] = {C6, E6, G6};
+
+//uint8_t* waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
+uint16_t sample_sizes[] = {22, 17, 15};
+uint8_t wave_index = 0;
+
+void generate_sine_wave(float frequency, uint16_t *output_wave, int num_samples) {
+    for (int i = 0; i < num_samples; i++) {
+        float theta = 2.0f * PI * i / num_samples;
+        output_wave[i] = (uint16_t)((arm_sin_f32(theta) + 1) * 2047 * 2 / 3); // 12-bit DAC output (0-4095 range)
     }
 }
 
-// Buffers for each note
-uint32_t sine_wave_C6[(C6/SAMPLING_RATE)];
-uint32_t sine_wave_E6[(E6/SAMPLING_RATE)];
-uint32_t sine_wave_G6[(G6/SAMPLING_RATE)];
 
 void generate_waves() {
-    generate_sine_wave(C6, SAMPLING_RATE, sine_wave_C6, C6/SAMPLING_RATE); // Example sampling rate: 8kHz
-    generate_sine_wave(E6, SAMPLING_RATE, sine_wave_E6, E6/SAMPLING_RATE);
-    generate_sine_wave(G6, SAMPLING_RATE, sine_wave_G6, G6/SAMPLING_RATE);
+    generate_sine_wave(C6, sine_wave_C6, 22);
+    generate_sine_wave(E6, sine_wave_E6, 17);
+    generate_sine_wave(G6, sine_wave_G6, 15);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (GPIO_Pin == GPIO_PIN_13) {
+    	HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+
+
+        wave_index = (wave_index + 1) % 3;
+//        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
+//        HAL_Delay(2); // Prevent glitches
+        HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
+    }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+//    if(htim == &htim2)
+//    {
+//        // Assuming sine_wave is an array of DAC values
+//        HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[TIMindex]);
+//        TIMindex = (TIMindex + 1) % (WAVE_SAMPLES); // 4 % 5 -> 4 ; 5 % 5 -> 0
+//    }
+}
+
+
+void start_waveform() {
+    HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
 }
 
 /* USER CODE END 0 */
@@ -158,10 +190,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   // Timer here
-//  HAL_TIM_Base_Start_IT(&htim2);
-  //  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-//  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)sine_wave, SIN_SAMPLES, DAC_ALIGN_8B_R);
-//  int i = 0;
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[2], sample_sizes[2], DAC_ALIGN_12B_R);
+
+//    HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+//  start_waveform();
+//    int i = 0;
 //  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 //  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
 
@@ -175,17 +209,18 @@ int main(void)
 
 //	  for (int j = 0; j < 3000; j++){
 //
-////	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, triangle_wave[i]);
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, sawtooth_wave[i]);
+//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, triangle_wave[i]);
+//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sawtooth_wave[i]);
 //	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[i]);
 //
 //	  	  i = (i + 1) % WAVE_SAMPLES;
-	  	  // to have 65Hz -> 15ms per period
-	  	  // delay between each increment must be around 2ms
-	  	  // because 8 data points for each period, and each period = 15ms
-	  	  // -> 15/15 ~= 1ms
+////	  	   to have 65Hz -> 15ms per period
+////	  	   delay between each increment must be around 2ms
+////	  	   because 8 data points for each period, and each period = 15ms
+////	  	   -> 15/15 ~= 1ms
 //	  	  HAL_Delay(1);
 //	  }
+
   }
 //  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
 //  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
@@ -354,9 +389,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-  /* DMAMUX1_OVR_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMAMUX1_OVR_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMAMUX1_OVR_IRQn);
 
 }
 
@@ -374,12 +406,23 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin : PC13 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : btn_Pin */
+  GPIO_InitStruct.Pin = btn_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(btn_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LED2_Pin */
+  GPIO_InitStruct.Pin = LED2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
@@ -390,36 +433,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if (GPIO_Pin == GPIO_PIN_13){
-		HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
-
-        switch (wave_index) {
-            case 0:
-                HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, sine_wave_C6, (C6/SAMPLING_RATE), DAC_ALIGN_12B_R);
-                wave_index = 1;
-                break;
-            case 1:
-                HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, sine_wave_E6, (E6/SAMPLING_RATE), DAC_ALIGN_12B_R);
-                wave_index = 2;
-                break;
-            case 2:
-                HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, sine_wave_G6, (G6/SAMPLING_RATE), DAC_ALIGN_12B_R);
-                wave_index = 0;
-                break;
-        }
-	}
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-//    if(htim == &htim2)
-//    {
-//        // Assuming sine_wave is an array of DAC values
-//        HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[TIMindex]);
-//        TIMindex = (TIMindex + 1) % (WAVE_SAMPLES); // 4 % 5 -> 4 ; 5 % 5 -> 0
-//    }
-}
 
 /* USER CODE END 4 */
 
