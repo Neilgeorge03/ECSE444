@@ -43,7 +43,14 @@
 /* Private variables ---------------------------------------------------------*/
 DAC_HandleTypeDef hdac1;
 
+TIM_HandleTypeDef htim2;
+
 /* USER CODE BEGIN PV */
+uint8_t dac_triangle, dac_sawtooth, dac_sinusoid;
+int timerIndex;
+uint8_t sawtooth_wave[8];
+uint8_t triangle_wave[8];
+uint8_t sinusoid_wave[8];
 
 /* USER CODE END PV */
 
@@ -51,6 +58,7 @@ DAC_HandleTypeDef hdac1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DAC1_Init(void);
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -90,18 +98,20 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DAC1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
   // Using 8-bit waves -> Max DAC Output = 2^8 - 1 = 255
   uint8_t sawtooth_multipliers[8] = {0, 1, 2, 3, 4, 5, 6, 7};
   uint8_t triangle_multipliers[8] = {0, 1, 2, 3, 3, 2, 1, 0};
-  float   sinusoid_multiplier[8]  = {0.0f, 0.707f, 1.0f, 0.707f, 0.0f, -0.707f, -1.0f, -0.707f};
+  float   sinusoid_multipliers[8];
 
-
-  uint8_t sawtooth_wave[8];
-  uint8_t triangle_wave[8];
-  uint8_t sinusoid_wave[8];
-
+  // 8 samples
+  for (int i = 0; i < 8; i++)
+  {
+      float angle = (2.0f * PI * i) / 8;  // Compute angle
+      sinusoid_multipliers[i] = arm_sin_f32(angle); // Compute sine value
+  }
 
   for (int i = 0; i < 8; i++) {
 	  // 7 and 3 are picked because largest values mapped to 255
@@ -111,10 +121,9 @@ int main(void)
 	  // By adding 1, we make the wave oscillate between [0, 2] instead of [-1,1]
 	  // then we multiply and scale. Since 255 is largest, we divide everything
 	  // by 2 which is equivalent to multiplying by half of 255
-	  sinusoid_wave[i] = (uint8_t)((sinusoid_multiplier[i] + 1.0f) * 127.5f);
+	  sinusoid_wave[i] = (uint8_t)((sinusoid_multipliers[i] + 1.0f) * 127.5f);
   }
 
-  uint8_t dac_triangle, dac_sawtooth, dac_sinusoid;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -124,26 +133,34 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  int i = 0;
-	  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-	  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
 
-	  for (int j = 0; j < 3000; j++){
-		  dac_triangle = triangle_wave[i];
-	  	  dac_sawtooth = sawtooth_wave[i];
-	  	  dac_sinusoid = sinusoid_wave[i];
-	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_sinusoid);
-	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, dac_triangle);
-	  	  // index for next value but mod 8 -> wrap around saw/tri wave arrays
-	  	  i = (i + 1) % 8;
-	  	  // to have 65Hz -> 15ms per period
-	  	  // delay between each increment must be around 2ms
-	  	  // because 8 data points for each period, and each period = 15ms
-	  	  // -> 15/8 ~= 2ms
-	  	  HAL_Delay(2);
-	  }
-	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
-	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
+	  // HAL_DELAY VERSION
+//	  int i = 0;
+//	  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+//	  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+//
+//	  for (int j = 0; j < 3000; j++){
+//		  dac_triangle = triangle_wave[i];
+//	  	  dac_sawtooth = sawtooth_wave[i];
+//	  	  dac_sinusoid = sinusoid_wave[i];
+//	  	  // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_sinusoid);
+//	  	  // HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, dac_triangle);
+//	  	  // index for next value but mod 8 -> wrap around saw/tri wave arrays
+//	  	  i = (i + 1) % 8;
+//	  	  // to have 65Hz -> 15ms per period
+//	  	  // delay between each increment must be around 2ms
+//	  	  // because 8 data points for each period, and each period = 15ms
+//	  	  // -> 15/8 ~= 2ms
+//	  	  HAL_Delay(2);
+//	  }
+//	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
+//	  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
+
+
+	  // TIMER VERSION
+	  HAL_TIM_Base_Start_IT(&htim2);
+	  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+
 
 	  int breakpoint = 0;
 
@@ -253,23 +270,117 @@ static void MX_DAC1_Init(void)
 }
 
 /**
+  * @brief TIM2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 0;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 60000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(led_GPIO_Port, led_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : pushBtn_Pin */
+  GPIO_InitStruct.Pin = pushBtn_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(pushBtn_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : led_Pin */
+  GPIO_InitStruct.Pin = led_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(led_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_pin)
+{
+	if (GPIO_pin == pushBtn_Pin)
+	{
+		HAL_GPIO_TogglePin(GPIOB, led_Pin);
+	}
+	else
+	{
+		__NOP();
+	}
+
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim == &htim2)
+	{
+		timerIndex = (timerIndex + 1) % 8;
+		dac_sinusoid = sinusoid_wave[timerIndex];
+		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_sinusoid);
+	}
+	else
+	{
+		__NOP();
+	}
+}
 
 /* USER CODE END 4 */
 
