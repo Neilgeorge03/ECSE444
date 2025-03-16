@@ -78,20 +78,9 @@ static void MX_TIM2_Init(void);
 /* USER CODE BEGIN 0 */
 //void generate_sine_wave(float frequency)
 
-uint16_t sine_wave_C6[22] = {
-    2048, 2636, 3166, 3574, 3803, 3803, 3574, 3166, 2636, 2048,
-    1460, 931, 524, 295, 295, 524, 931, 1460, 2048, 2636, 3166, 3574
-};
-
-uint16_t sine_wave_E6[17] = {
-    2048, 2755, 3352, 3708, 3799, 3617, 3198, 2614, 1975,
-    1391, 971, 789, 880, 1236, 1833, 2540, 3102
-};
-
-uint16_t sine_wave_G6[15] = {
-    2048, 2905, 3584, 3843, 3613, 2984, 2171, 1310,
-    684, 454, 713, 1392, 2250, 2943, 3204
-};
+uint16_t sine_wave_C6[22];
+uint16_t sine_wave_E6[17];
+uint16_t sine_wave_G6[15];
 
 uint16_t *waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
 //uint32_t sample_sizes[] = {C6, E6, G6};
@@ -152,7 +141,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
-//	generate_waves();
+	generate_waves();
 	wave_index = 0;
     TIMindex = 0;  // Static index to keep track of the sine wave sample
 

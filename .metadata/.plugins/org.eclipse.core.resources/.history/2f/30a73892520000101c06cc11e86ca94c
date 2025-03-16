@@ -152,7 +152,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
-//	generate_waves();
+	generate_waves();
 	wave_index = 0;
     TIMindex = 0;  // Static index to keep track of the sine wave sample
 

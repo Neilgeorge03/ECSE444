@@ -22,7 +22,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <math.h>
-#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,14 +31,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define WAVE_SAMPLES 100
-#define NUM_SAMPLES 441
-
-#define SIN_SAMPLES 100
-#define SAMPLING_RATE 44100
-#define C6 1046
-#define E6 1318
-#define G6 1567
 
 /* USER CODE END PD */
 
@@ -55,12 +46,6 @@ DMA_HandleTypeDef hdma_dac1_ch1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-uint8_t wave_index;  // Tracks active waveform
-uint8_t triangle_wave[WAVE_SAMPLES];
-uint8_t sawtooth_wave[WAVE_SAMPLES];
-uint8_t sinusoid_wave[WAVE_SAMPLES];
-
-uint32_t TIMindex;
 
 /* USER CODE END PV */
 
@@ -76,69 +61,73 @@ static void MX_TIM2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//void generate_sine_wave(float frequency)
 
-uint16_t sine_wave_C6[22] = {
-    2048, 2636, 3166, 3574, 3803, 3803, 3574, 3166, 2636, 2048,
-    1460, 931, 524, 295, 295, 524, 931, 1460, 2048, 2636, 3166, 3574
-};
+// For timer-interrupt DAC, set to 1
+int isTimerMode = 0;
+// For DMA driven DAC, set to 1
+int isDMA = 0;
 
-uint16_t sine_wave_E6[17] = {
-    2048, 2755, 3352, 3708, 3799, 3617, 3198, 2614, 1975,
-    1391, 971, 789, 880, 1236, 1833, 2540, 3102
-};
+int currIdx = 0;
+int led_state = 0;
 
-uint16_t sine_wave_G6[15] = {
-    2048, 2905, 3584, 3843, 3613, 2984, 2171, 1310,
-    684, 454, 713, 1392, 2250, 2943, 3204
-};
 
-uint16_t *waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
-//uint32_t sample_sizes[] = {C6, E6, G6};
+uint16_t triangleVal, sawtoothVal, sinVal;
 
-//uint8_t* waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
-uint16_t sample_sizes[] = {22, 17, 15};
-uint8_t wave_index = 0;
+// Arrays for Part 1
+uint16_t triangleArray[16] = {0,1,2,3,4,5,6,7,8,7,6,5,4,3,2,1};
+uint16_t sawtoothArray[16] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+float sinArray[16] ={0.0,0.39269875,0.7853975,1.1780962499999998,1.570795,1.96349375,2.3561924999999997,2.74889125,3.14159,3.53428875,3.9269875,4.31968625,4.712384999999999,5.1050837499999995,5.4977825,5.89048125};
+uint16_t sinArrayDAC[16];
 
-void generate_sine_wave(float frequency, uint16_t *output_wave, int num_samples) {
-    for (int i = 0; i < num_samples; i++) {
-        float theta = 2.0f * PI * i / num_samples;
-        output_wave[i] = (uint16_t)((arm_sin_f32(theta) + 1) * 2047 * 2 / 3); // 12-bit DAC output (0-4095 range)
-    }
+
+// Part 2:
+// 22 elements at 44.1KHz ~= 2000 periods repeated in 1 second == 2KHz tone
+float C7ArrayRad[22] = {0.0,0.28559933214452665,0.5711986642890533,0.8567979964335799,1.1423973285781066,1.4279966607226333,1.7135959928671598,1.9991953250116865,2.284794657156213,2.5703939893007397,2.8559933214452666,3.141592653589793,3.4271919857343196,3.7127913178788465,3.998390650023373,4.2839899821679,4.569589314312426,4.855188646456953,5.140787978601479,5.426387310746007,5.711986642890533,5.99758597503506};
+float G7ArrayRad[15] = {0.0,0.41887902047863906,0.8377580409572781,1.2566370614359172,1.6755160819145563,2.0943951023931953,2.5132741228718345,2.9321531433504733,3.3510321638291125,3.7699111843077517,4.1887902047863905,4.607669225265029,5.026548245743669,5.445427266222308,5.864306286700947};
+float E7ArrayRad[17] ={0.0,0.36959913571644626,0.7391982714328925,1.1087974071493387,1.478396542865785,1.8479956785822313,2.2175948142986774,2.587193950015124,2.95679308573157,3.326392221448016,3.6959913571644627,4.065590492880909,4.435189628597355,4.804788764313801,5.174387900030248,5.543987035746694,5.91358617146314};
+
+uint16_t C7DAC[22];
+uint16_t G7DAC[15];
+uint16_t E7DAC[17];
+
+
+
+// For DMA Driven DAC, need dynamic pointer to arrays
+uint16_t* currData = C7DAC;
+uint16_t currDataLen = 22;
+int noteIndex = 0;
+uint16_t* allNotes[3] = {C7DAC, G7DAC, E7DAC};
+int allNoteLens[3] = {22,15,17};
+int soundPlaying = 0;
+
+
+void HAL_TIM_PeriodElapsedCallback (TIM_HandleTypeDef * htim){
+	if (!isDMA && htim == &htim2){
+		currIdx = (currIdx + 1) % 22;
+		sinVal = C7DAC[currIdx];
+		int currIndex = currIdx;
+		uint16_t currValue = sinVal;
+		HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, sinVal);
+	}
 }
 
 
-void generate_waves() {
-    generate_sine_wave(C6, sine_wave_C6, 22);
-    generate_sine_wave(E6, sine_wave_E6, 17);
-    generate_sine_wave(G6, sine_wave_G6, 15);
-}
+// Pushbutton interrupt
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(isDMA){
+		if(soundPlaying){
+			HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
+			noteIndex = (noteIndex + 1) % 3;
+			currData = allNotes[noteIndex];
+			currDataLen = allNoteLens[noteIndex];
+		}else{
+			HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, currData, currDataLen, DAC_ALIGN_12B_R);
+		}
+		soundPlaying = !soundPlaying;
+	}
+	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, led_state ? GPIO_PIN_SET : GPIO_PIN_RESET);
+	led_state = (led_state + 1) % 2;
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == GPIO_PIN_13) {
-    	HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-
-
-        wave_index = (wave_index + 1) % 3;
-//        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
-//        HAL_Delay(2); // Prevent glitches
-        HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
-    }
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-//    if(htim == &htim2)
-//    {
-//        // Assuming sine_wave is an array of DAC values
-//        HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[TIMindex]);
-//        TIMindex = (TIMindex + 1) % (WAVE_SAMPLES); // 4 % 5 -> 4 ; 5 % 5 -> 0
-//    }
-}
-
-
-void start_waveform() {
-    HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
 }
 
 /* USER CODE END 0 */
@@ -151,10 +140,26 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	triangleVal = triangleArray[currIdx];
+	sawtoothVal = sawtoothArray[currIdx];
 
-//	generate_waves();
-	wave_index = 0;
-    TIMindex = 0;  // Static index to keep track of the sine wave sample
+	for(int i=0; i<16; i++){
+		triangleArray[i] = 4095 * triangleArray[i] / 8;
+		sawtoothArray[i] = 4095 * sawtoothArray[i] / 15;
+		sinArrayDAC[i] = (uint16_t) (4095 * sin(sinArray[i])+4095)/3 + 4095/3;
+	}
+	for(int i=0; i<22; i++){
+		C7DAC[i] = (uint16_t) (4095 * sin(C7ArrayRad[i])+4095)/3 + 4095/3;
+		if(i<15){
+			G7DAC[i] = (uint16_t) (4095 * sin(G7ArrayRad[i]+4095))/3 + 4095/3;
+		}
+		if(i < 17){
+			E7DAC[i] = (uint16_t) (4095 * sin(E7ArrayRad[i]+4095))/3 + 4095/3;
+		}
+	}
+
+
+
 
   /* USER CODE END 1 */
 
@@ -181,61 +186,56 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
-
-  for (int i = 0; i < WAVE_SAMPLES; i++) {
-	  // 7 and 3 are picked because largest values mapped to 255
-	  // smallest multiplier (0) mapped to 0 in dac output
-	  sawtooth_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-	  if (i <= (WAVE_SAMPLES/2)){
-		  triangle_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-	  } else {
-		  triangle_wave[i] = 255 * ((float) (WAVE_SAMPLES - i)) / WAVE_SAMPLES;
-	  }
-
-	  sinusoid_wave[i] = (uint8_t)((arm_sin_f32(2 * PI * ((float) i) / WAVE_SAMPLES) + 1) * 100) * 2/3;
+  if(isTimerMode){
+  	if(HAL_TIM_Base_Start_IT(&htim2) != HAL_OK){
+  		Error_Handler();
+  	}
   }
 
+  if(!isDMA){
+	  if(HAL_DAC_Start(&hdac1, DAC_CHANNEL_1) != HAL_OK){
+		  Error_Handler();
+	  }
+  }
+
+  if(HAL_DAC_Start(&hdac1, DAC_CHANNEL_2) != HAL_OK){
+	  Error_Handler();
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
-  // Timer here
-  HAL_TIM_Base_Start_IT(&htim2);
-  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[2], sample_sizes[2], DAC_ALIGN_12B_R);
-
-//    HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-//  start_waveform();
-//    int i = 0;
-//  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-//  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
-
-  while (1)
+  while (!isTimerMode)
   {
+	  // convert current value to voltage
+	  if(HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, triangleVal) != HAL_OK){
+		  Error_Handler();
+	  }
+	  if(HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, sinVal) != HAL_OK){
+		  Error_Handler();
+	  }
+
+	  uint32_t lastVal = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_1);
+	  int currentIdx = currIdx;
+	  // increment index + modulo
+	  currIdx = (currIdx + 1) % 16;
+
+	  // get next value
+	  triangleVal = triangleArray[currIdx];
+	  sawtoothVal = sawtoothArray[currIdx];
+	  sinVal = sinArrayDAC[currIdx];
+
+	  // 1 ms delay
+	  HAL_Delay(1);
+  }
+  while(isTimerMode)
+  {
+	  uint32_t lastVal = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_1);
+	  int currentIndex = currIdx;
+  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	  // HAL Delay version
-
-//	  for (int j = 0; j < 3000; j++){
-//
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, triangle_wave[i]);
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sawtooth_wave[i]);
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[i]);
-//
-//	  	  i = (i + 1) % WAVE_SAMPLES;
-////	  	   to have 65Hz -> 15ms per period
-////	  	   delay between each increment must be around 2ms
-////	  	   because 8 data points for each period, and each period = 15ms
-////	  	   -> 15/15 ~= 1ms
-//	  	  HAL_Delay(1);
-//	  }
-
-  }
-//  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
-//  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
-
   /* USER CODE END 3 */
 }
 
@@ -324,14 +324,6 @@ static void MX_DAC1_Init(void)
   sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_DISABLE;
   sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
   if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** DAC channel OUT2 config
-  */
-  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -456,9 +448,7 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
-  while (1)
-  {
-  }
+
   /* USER CODE END Error_Handler_Debug */
 }
 
