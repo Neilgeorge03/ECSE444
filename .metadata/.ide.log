@@ -1,1 +1,5 @@
-2025-03-14 16:19:58,881 [ERROR] LogOutputStream:75 - [STDERR_REDIRECT] 
+2025-03-18 00:02:42,854 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2025-03-18 00:02:46,271 [ERROR] AdobePublisher:187 - Exception while getting the server answer: java.net.SocketTimeoutException: Read timed out
+2025-03-18 00:02:51,954 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2025-03-18 00:02:54,148 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out
+2025-03-18 00:02:56,223 [ERROR] AdobePublisher:162 - Exception while opening the connection: java.net.SocketTimeoutException: Read timed out

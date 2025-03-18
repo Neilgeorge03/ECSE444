@@ -78,25 +78,15 @@ static void MX_TIM2_Init(void);
 /* USER CODE BEGIN 0 */
 //void generate_sine_wave(float frequency)
 
-uint16_t sine_wave_C6[22] = {
-    2048, 2636, 3166, 3574, 3803, 3803, 3574, 3166, 2636, 2048,
-    1460, 931, 524, 295, 295, 524, 931, 1460, 2048, 2636, 3166, 3574
-};
+uint16_t sine_wave_C6[22];
 
-uint16_t sine_wave_E6[17] = {
-    2048, 2755, 3352, 3708, 3799, 3617, 3198, 2614, 1975,
-    1391, 971, 789, 880, 1236, 1833, 2540, 3102
-};
+uint16_t sine_wave_E6[17];
 
-uint16_t sine_wave_G6[15] = {
-    2048, 2905, 3584, 3843, 3613, 2984, 2171, 1310,
-    684, 454, 713, 1392, 2250, 2943, 3204
-};
+uint16_t sine_wave_G6[15];
+
 
 uint16_t *waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
-//uint32_t sample_sizes[] = {C6, E6, G6};
 
-//uint8_t* waveforms[] = {sine_wave_C6, sine_wave_E6, sine_wave_G6};
 uint16_t sample_sizes[] = {22, 17, 15};
 uint8_t wave_index = 0;
 
@@ -116,13 +106,15 @@ void generate_waves() {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == GPIO_PIN_13) {
-    	HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-
-
+        HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
         wave_index = (wave_index + 1) % 3;
-//        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
-//        HAL_Delay(2); // Prevent glitches
-        HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
+
+        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
+
+
+        if (HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R) != HAL_OK) {
+            Error_Handler();
+        }
     }
 }
 
@@ -137,10 +129,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 
 
-void start_waveform() {
-    HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R);
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -152,7 +140,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 
-//	generate_waves();
+	generate_waves();
 	wave_index = 0;
     TIMindex = 0;  // Static index to keep track of the sine wave sample
 
@@ -182,18 +170,18 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-  for (int i = 0; i < WAVE_SAMPLES; i++) {
-	  // 7 and 3 are picked because largest values mapped to 255
-	  // smallest multiplier (0) mapped to 0 in dac output
-	  sawtooth_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-	  if (i <= (WAVE_SAMPLES/2)){
-		  triangle_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-	  } else {
-		  triangle_wave[i] = 255 * ((float) (WAVE_SAMPLES - i)) / WAVE_SAMPLES;
-	  }
-
-	  sinusoid_wave[i] = (uint8_t)((arm_sin_f32(2 * PI * ((float) i) / WAVE_SAMPLES) + 1) * 100) * 2/3;
-  }
+//  for (int i = 0; i < WAVE_SAMPLES; i++) {
+//	  // 7 and 3 are picked because largest values mapped to 255
+//	  // smallest multiplier (0) mapped to 0 in dac output
+//	  sawtooth_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
+//	  if (i <= (WAVE_SAMPLES/2)){
+//		  triangle_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
+//	  } else {
+//		  triangle_wave[i] = 255 * ((float) (WAVE_SAMPLES - i)) / WAVE_SAMPLES;
+//	  }
+//
+//	  sinusoid_wave[i] = (uint8_t)((arm_sin_f32(2 * PI * ((float) i) / WAVE_SAMPLES) + 1) * 100) * 2/3;
+//  }
 
   /* USER CODE END 2 */
 
@@ -202,13 +190,13 @@ int main(void)
 
   // Timer here
   HAL_TIM_Base_Start_IT(&htim2);
-  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[2], sample_sizes[2], DAC_ALIGN_12B_R);
 
 //    HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 //  start_waveform();
-//    int i = 0;
+    int i = 0;
 //  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 //  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+
 
   while (1)
   {
@@ -250,7 +238,7 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
+  if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST) != HAL_OK)
   {
     Error_Handler();
   }
@@ -265,7 +253,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_MSI;
   RCC_OscInitStruct.PLL.PLLM = 1;
-  RCC_OscInitStruct.PLL.PLLN = 40;
+  RCC_OscInitStruct.PLL.PLLN = 60;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
@@ -283,7 +271,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
@@ -319,19 +307,11 @@ static void MX_DAC1_Init(void)
   */
   sConfig.DAC_SampleAndHold = DAC_SAMPLEANDHOLD_DISABLE;
   sConfig.DAC_Trigger = DAC_TRIGGER_T2_TRGO;
-  sConfig.DAC_HighFrequency = DAC_HIGH_FREQUENCY_INTERFACE_MODE_ABOVE_80MHZ;
+  sConfig.DAC_HighFrequency = DAC_HIGH_FREQUENCY_INTERFACE_MODE_DISABLE;
   sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
   sConfig.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_DISABLE;
   sConfig.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
   if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** DAC channel OUT2 config
-  */
-  sConfig.DAC_Trigger = DAC_TRIGGER_NONE;
-  if (HAL_DAC_ConfigChannel(&hdac1, &sConfig, DAC_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -374,7 +354,7 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_UPDATE;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
   {
@@ -397,9 +377,9 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
 
 }
 
