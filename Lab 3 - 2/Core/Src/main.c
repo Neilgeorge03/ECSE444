@@ -32,7 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define WAVE_SAMPLES 100
+#define WAVE_SAMPLES 8
 #define NUM_SAMPLES 441
 
 #define SIN_SAMPLES 100
@@ -105,17 +105,17 @@ void generate_waves() {
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    if (GPIO_Pin == GPIO_PIN_13) {
-        HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
-        wave_index = (wave_index + 1) % 3;
-
-        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
-
-
-        if (HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R) != HAL_OK) {
-            Error_Handler();
-        }
-    }
+//    if (GPIO_Pin == GPIO_PIN_13) {
+//        HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
+//        wave_index = (wave_index + 1) % 3;
+//
+//        HAL_DAC_Stop_DMA(&hdac1, DAC_CHANNEL_1);
+//
+//
+//        if (HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, waveforms[wave_index], sample_sizes[wave_index], DAC_ALIGN_12B_R) != HAL_OK) {
+//            Error_Handler();
+//        }
+//    }
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -170,18 +170,18 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-//  for (int i = 0; i < WAVE_SAMPLES; i++) {
-//	  // 7 and 3 are picked because largest values mapped to 255
-//	  // smallest multiplier (0) mapped to 0 in dac output
-//	  sawtooth_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-//	  if (i <= (WAVE_SAMPLES/2)){
-//		  triangle_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
-//	  } else {
-//		  triangle_wave[i] = 255 * ((float) (WAVE_SAMPLES - i)) / WAVE_SAMPLES;
-//	  }
-//
-//	  sinusoid_wave[i] = (uint8_t)((arm_sin_f32(2 * PI * ((float) i) / WAVE_SAMPLES) + 1) * 100) * 2/3;
-//  }
+  for (int i = 0; i < WAVE_SAMPLES; i++) {
+	  // 7 and 3 are picked because largest values mapped to 255
+	  // smallest multiplier (0) mapped to 0 in dac output
+	  sawtooth_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
+	  if (i <= (WAVE_SAMPLES/2)){
+		  triangle_wave[i] = 255 * ((float) i) / WAVE_SAMPLES;
+	  } else {
+		  triangle_wave[i] = 255 * ((float) (WAVE_SAMPLES - i)) / WAVE_SAMPLES;
+	  }
+
+	  sinusoid_wave[i] = (uint8_t)((arm_sin_f32(2 * PI * ((float) i) / WAVE_SAMPLES) + 1) * 100) * 2/3;
+  }
 
   /* USER CODE END 2 */
 
@@ -194,8 +194,8 @@ int main(void)
 //    HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
 //  start_waveform();
     int i = 0;
-//  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-//  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
 
 
   while (1)
@@ -206,23 +206,23 @@ int main(void)
 
 	  // HAL Delay version
 
-//	  for (int j = 0; j < 3000; j++){
-//
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, triangle_wave[i]);
+	  for (int j = 0; j < 3000; j++){
+
+	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, triangle_wave[i]);
 //	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sawtooth_wave[i]);
-//	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[i]);
-//
-//	  	  i = (i + 1) % WAVE_SAMPLES;
-////	  	   to have 65Hz -> 15ms per period
-////	  	   delay between each increment must be around 2ms
-////	  	   because 8 data points for each period, and each period = 15ms
-////	  	   -> 15/15 ~= 1ms
-//	  	  HAL_Delay(1);
-//	  }
+	  	  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sinusoid_wave[i]);
+
+	  	  i = (i + 1) % WAVE_SAMPLES;
+//	  	   to have 65Hz -> 15ms per period
+//	  	   delay between each increment must be around 2ms
+//	  	   because 8 data points for each period, and each period = 15ms
+//	  	   -> 15/15 ~= 1ms
+	  	  HAL_Delay(1);
+	  }
 
   }
-//  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
-//  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
+  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_1);
+  HAL_DAC_Stop(&hdac1, DAC_CHANNEL_2);
 
   /* USER CODE END 3 */
 }
