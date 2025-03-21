@@ -1,0 +1,96 @@
+2025-03-13 00:35:46,812 [INFO] WebApp:191 - Connection restablished
+2025-03-13 00:36:57,265 [INFO] WebApp:194 - Connection lost
+2025-03-13 00:36:57,676 [INFO] WebApp:191 - Connection restablished
+2025-03-13 00:37:49,098 [INFO] WebApp:194 - Connection lost
+2025-03-13 00:37:58,393 [INFO] WebApp:191 - Connection restablished
+2025-03-13 00:40:03,131 [INFO] WebApp:194 - Connection lost
+2025-03-13 00:40:37,380 [INFO] WebApp:191 - Connection restablished
+2025-03-13 00:40:58,240 [INFO] WebApp:194 - Connection lost
+2025-03-13 02:09:51,181 [INFO] WebApp:191 - Connection restablished
+2025-03-13 09:34:02,238 [INFO] WebApp:194 - Connection lost
+2025-03-13 09:34:10,192 [INFO] WebApp:191 - Connection restablished
+2025-03-13 09:36:10,094 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:06:54,159 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:07:24,403 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:07:42,942 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:08:20,071 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:08:30,303 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:09:27,728 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:09:31,454 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:10:53,808 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:11:00,534 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:12:05,023 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:12:11,421 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:18:41,665 [INFO] WebApp:194 - Connection lost
+2025-03-13 11:18:45,251 [INFO] WebApp:191 - Connection restablished
+2025-03-13 11:31:46,216 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 693648728 Bytes (1073741824)
+2025-03-13 11:31:47,739 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: DAC
+2025-03-13 11:31:47,745 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM1_8L4
+2025-03-13 11:31:47,747 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-03-13 11:31:47,747 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-03-13 11:31:47,747 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC
+2025-03-13 11:31:47,749 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-03-13 11:31:47,752 [INFO] CodeGenerator:882 - code generatio: config db path: /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.common.mx_6.14.0.202502271554//db/
+2025-03-13 11:31:47,894 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/license.tmp_save
+2025-03-13 11:31:48,263 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/license.tmp
+2025-03-13 11:31:48,293 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/gpio.tmp_save
+2025-03-13 11:31:48,454 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/gpio.tmp
+2025-03-13 11:31:48,535 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_it.c_save
+2025-03-13 11:31:48,953 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_it.c
+2025-03-13 11:31:48,956 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_it.h_save
+2025-03-13 11:31:49,047 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_it.h
+2025-03-13 11:31:49,059 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_hal_msp.c_save
+2025-03-13 11:31:49,242 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_hal_msp.c
+2025-03-13 11:31:49,244 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/system.tmp_save
+2025-03-13 11:31:49,381 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/system.tmp
+2025-03-13 11:31:49,389 [INFO] CodeEngine:319 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_hal_conf.h_save
+2025-03-13 11:31:49,474 [INFO] CodeEngine:343 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_hal_conf.h
+2025-03-13 11:31:49,506 [WARN] IPConfigManager:3747 - IP not found : TIM
+2025-03-13 11:31:49,506 [WARN] CodeGenerator:4198 - IP not found : null
+2025-03-13 11:31:49,509 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/main.h_save
+2025-03-13 11:31:49,620 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/main.h
+2025-03-13 11:31:49,622 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/main.c_save
+2025-03-13 11:31:49,769 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/main.c
+2025-03-13 11:31:49,998 [INFO] ProjectBuilder:3324 - Time for Copy HAL[1] : 78mS.
+2025-03-13 11:31:50,000 [INFO] ProjectBuilder:4912 - Project Generator version: 4.6.0-B36
+2025-03-13 11:31:50,106 [INFO] ConfigFileManager:1590 - The Die is : DIE470
+2025-03-13 11:31:51,701 [INFO] ProjectBuilder:5191 - Time for Generating toolchain IDE Files: 1700mS.
+2025-03-13 11:31:51,704 [INFO] ProjectBuilder:3181 - Time for Copy CMSIS : 1mS.
+2025-03-13 11:31:51,705 [INFO] ProjectBuilder:3181 - Time for Copy CMSIS : 0mS.
+2025-03-13 11:44:27,821 [INFO] NvicIntPanel:101 - NVIC parent = com.st.microxplorer.plugins.ip.nvic.MultiNvicIntPanel[,0,0,0x0,invalid,layout=javax.swing.BoxLayout,alignmentX=0.0,alignmentY=0.0,border=,flags=9,maximumSize=,minimumSize=,preferredSize=]
+2025-03-13 11:48:06,069 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 762223200 Bytes (1073741824)
+2025-03-13 11:48:09,370 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 800494176 Bytes (1073741824)
+2025-03-13 11:48:14,946 [INFO] UtilMem:75 - End SaveConfig() Used Memory: 860789344 Bytes (1073741824)
+2025-03-13 11:48:15,678 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: DAC
+2025-03-13 11:48:15,678 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: TIM1_8L4
+2025-03-13 11:48:15,678 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: SYS
+2025-03-13 11:48:15,678 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: RCC
+2025-03-13 11:48:15,678 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: NVIC
+2025-03-13 11:48:15,679 [INFO] BlockDiagram:2775 - set Specific Code input for plugin: GPIO
+2025-03-13 11:48:15,680 [INFO] CodeGenerator:882 - code generatio: config db path: /Applications/STM32CubeIDE.app/Contents/Eclipse/plugins/com.st.stm32cube.common.mx_6.14.0.202502271554//db/
+2025-03-13 11:48:16,344 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/license.tmp_save
+2025-03-13 11:48:16,738 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/license.tmp
+2025-03-13 11:48:16,831 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/gpio.tmp_save
+2025-03-13 11:48:16,996 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/gpio.tmp
+2025-03-13 11:48:17,103 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_it.c_save
+2025-03-13 11:48:17,360 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_it.c
+2025-03-13 11:48:17,363 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_it.h_save
+2025-03-13 11:48:17,437 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_it.h
+2025-03-13 11:48:17,453 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_hal_msp.c_save
+2025-03-13 11:48:17,630 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/stm32l4xx_hal_msp.c
+2025-03-13 11:48:17,632 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/system.tmp_save
+2025-03-13 11:48:17,695 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/MXTmpFiles/system.tmp
+2025-03-13 11:48:17,706 [INFO] CodeEngine:319 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_hal_conf.h_save
+2025-03-13 11:48:17,781 [INFO] CodeEngine:343 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/stm32l4xx_hal_conf.h
+2025-03-13 11:48:17,837 [WARN] IPConfigManager:3747 - IP not found : TIM
+2025-03-13 11:48:17,838 [WARN] CodeGenerator:4198 - IP not found : null
+2025-03-13 11:48:17,841 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/main.h_save
+2025-03-13 11:48:17,962 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Inc/main.h
+2025-03-13 11:48:17,965 [INFO] CodeEngine:263 - oldGeneratedFile, /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/main.c_save
+2025-03-13 11:48:18,197 [INFO] CodeEngine:287 - Generated code: /Users/neiljoegeorge/Documents/ECSE444/Lab 3 - 2/Core/Src/main.c
+2025-03-13 11:48:18,580 [INFO] ProjectBuilder:3324 - Time for Copy HAL[1] : 79mS.
+2025-03-13 11:48:18,587 [INFO] ProjectBuilder:4912 - Project Generator version: 4.6.0-B36
+2025-03-13 11:48:18,722 [INFO] ConfigFileManager:1590 - The Die is : DIE470
+2025-03-13 11:48:22,393 [INFO] ProjectBuilder:5191 - Time for Generating toolchain IDE Files: 3798mS.
+2025-03-13 11:48:22,398 [INFO] ProjectBuilder:3181 - Time for Copy CMSIS : 1mS.
+2025-03-13 11:48:22,399 [INFO] ProjectBuilder:3181 - Time for Copy CMSIS : 0mS.

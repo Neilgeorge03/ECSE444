@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<item key="replaceBarOpen" value="true"/>
+	<list key="searchhistory">
+		<item value="DMA_CIRCULAR"/>
+		<item value="circular"/>
+		<item value="sinusoid_wave"/>
+		<item value="sine_wave"/>
+		<item value="sampling_rate"/>
+		<item value="hdac2"/>
+		<item value="HAL_DAC_Init"/>
+		<item value="DAC_ALIGN_8B_R"/>
+		<item value="User_PB_Pin"/>
+	</list>
+</section>
