@@ -26,8 +26,25 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h \
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h \
- ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
+ ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
+ ../Core/Inc/stm32l4s5i_iot01_hsensor.h ../Core/Inc/stm32l4s5i_iot01.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/hts221.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/../Common/hsensor.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/../Common/tsensor.h \
+ ../Core/Inc/stm32l4s5i_iot01_magneto.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lis3mdl/lis3mdl.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lis3mdl/../Common/magneto.h \
+ ../Core/Inc/stm32l4s5i_iot01_psensor.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/lps22hb.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/../Common/psensor.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/../Common/tsensor.h \
+ ../Core/Inc/stm32l4s5i_iot01_accelero.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/lsm6dsl.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/../Common/accelero.h \
+ /Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/../Common/gyro.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h:
 ../Core/Inc/stm32l4xx_hal_conf.h:
@@ -56,5 +73,23 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h:
+../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h:
 ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h:
+../Core/Inc/stm32l4s5i_iot01_hsensor.h:
+../Core/Inc/stm32l4s5i_iot01.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/hts221.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/../Common/hsensor.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/hts221/../Common/tsensor.h:
+../Core/Inc/stm32l4s5i_iot01_magneto.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lis3mdl/lis3mdl.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lis3mdl/../Common/magneto.h:
+../Core/Inc/stm32l4s5i_iot01_psensor.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/lps22hb.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/../Common/psensor.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lps22hb/../Common/tsensor.h:
+../Core/Inc/stm32l4s5i_iot01_accelero.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/lsm6dsl.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/../Common/accelero.h:
+/Users/isbatos/STM32CubeIDE/workspace_1.17.0/lab4/Drivers/Components/../Components/lsm6dsl/../Common/gyro.h:
