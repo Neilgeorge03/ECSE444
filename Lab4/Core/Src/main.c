@@ -79,7 +79,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	switch (sensorIndex) {
 	case 0:
-		sprintf(buffer, "humidity: %d\r\n", (int)BSP_HSENSOR_ReadHumidity());
+		sprintf(buffer, "humidity: %.2f\r\n", BSP_HSENSOR_ReadHumidity());
 		break;
 
 	case 1:
@@ -88,13 +88,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		break;
 
 	case 2:
-		sprintf(buffer, "pressure: %d\r\n", (int)BSP_PSENSOR_ReadPressure());
+		sprintf(buffer, "pressure: %.2f\r\n", BSP_PSENSOR_ReadPressure());
 		break;
 
 	case 3:
 		BSP_ACCELERO_AccGetXYZ(acceleroXYZ);
-		sprintf(buffer, "accelerometer: X:%d, Y:%d, Z:%d\r\n",
-				acceleroXYZ[0], acceleroXYZ[1], acceleroXYZ[2]);
+		sprintf(buffer, "accelerometer: X:%d, Y:%d, Z:%d\r\n", acceleroXYZ[0], acceleroXYZ[1], acceleroXYZ[2]);
 		break;
 	}
 
